@@ -1,0 +1,98 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const UserDetails = ({ label, value }) => (
+  <div className="flex items-center">
+    <h3 className="text-md font-medium text-gray-900 w-32">{label}:</h3>
+    <p className="text-md text-gray-700">{value}</p>
+  </div>
+);
+const ProfilePage = () => {
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState('');
+  const [selectedProductId, setSelectedProductId] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/user', { withCredentials: true });
+        setUser(response.data);
+      } catch (err) {
+        setError('Error fetching user data');
+        console.error(err);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const toggleProductDetails = (productId) => {
+    if (selectedProductId === productId) {
+      setSelectedProductId(null); // If the same product is clicked again, it will collapse the details
+    } else {
+      setSelectedProductId(productId);
+    }
+  };
+
+  if (error) {
+    return (
+      <div className="text-red-500 text-center mt-8">
+        Error: {error}
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="text-center mt-8">
+        Loading...
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto p-4 justify-center">
+      {/* Main Content Flex Container */}
+      <div className="flex flex-col md:flex-row gap-4 justify-center">
+        
+        {/* User Info - Left Container */}
+        <div className="flex-1 bg-white p-6 rounded-lg shadow-md">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">User Details</h1>
+          <p className="text-lg text-gray-700">Username: {user.username}</p>
+          <p className="text-lg text-gray-700">Email: {user.email}</p>
+          <p className="text-lg text-gray-700">Number of Orders: {user.boughtProducts.length}</p>
+        </div>
+
+        {/* Bought Products - Right Container */}
+        <div className="flex-1 bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Products Purchased</h2>
+          <ul>
+            {user.boughtProducts.map((order, orderIndex) => (
+              <li key={orderIndex} className="mb-4">
+                <button
+                  onClick={() => toggleProductDetails(orderIndex)}
+                  className="w-full text-left p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-blue-50 hover:text-blue-600 transition duration-300"
+                >
+                  Order Number: {orderIndex + 1}
+                </button>
+                {selectedProductId === orderIndex && (
+                  <div className="mt-2 p-4 bg-gray-50 rounded-lg">
+                    {order.products.map((product, productIndex) => (
+                      <div key={productIndex} className="mb-3 p-2 border-b last:border-b-0">
+                        <p className="text-lg font-medium text-gray-900">Product Title: {product.title}</p>
+                        <p className="text-md text-gray-600">Price: ${product.price}</p>
+                        {/* Add more details as needed */}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProfilePage;
