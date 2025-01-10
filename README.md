@@ -165,9 +165,9 @@ Note : Before running setup your .env as required
 
 ## Author
 
-- A Bharath
-- https://github.com/Bharath601/ecohub_market.git
+- B SAI ARAVIND
+
 
 ## Feedback 
 
-If you have any feedback, please reach out me at asb.bharath601@gmail.com
+If you have any feedback, please reach out me at bhuranpursaiaravind18@gmail.com
